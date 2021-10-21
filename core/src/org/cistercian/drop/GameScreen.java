@@ -37,6 +37,7 @@ public class GameScreen implements Screen {
 	Array<Rectangle> raindrops;
 	long lastDropTime;
 	int dropsGathered;
+	int lives = 3;
 
     /**
      * Create the objects for this screen. Note that Screens use the constructor rather than a
@@ -110,10 +111,15 @@ public class GameScreen implements Screen {
 		game.batch.begin();
 		game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, Drop.WORLD_HEIGHT);
 		game.batch.draw(bucketImage, bucket.x, bucket.y);
+		game.font.draw(game.batch, "Lives: " + lives, 0, Drop.WORLD_HEIGHT-10);
 		for (Rectangle raindrop : raindrops) {
 			game.batch.draw(dropImage, raindrop.x, raindrop.y);
 		}
+		
+
+		
 		game.batch.end();
+
 
 		// process user input
 		if (Gdx.input.isTouched()) {
@@ -142,17 +148,23 @@ public class GameScreen implements Screen {
 		// a sound effect as well.
 		Iterator<Rectangle> iter = raindrops.iterator();
 		while (iter.hasNext()) {
-			Rectangle raindrop = iter.next();
-			raindrop.y -= RAINDROP_SPEED * Gdx.graphics.getDeltaTime();
-			if (raindrop.y + SPRITE_SIZE < 0)
+			Rectangle drop = iter.next();
+			drop.y -= RAINDROP_SPEED * Gdx.graphics.getDeltaTime();
+			if (drop.y + SPRITE_SIZE < 0){
 				iter.remove();
-			if (raindrop.overlaps(bucket)) {
+			lives --;
+			}
+			if (drop.overlaps(bucket)) {
 				dropsGathered++;
-				dropSound.play();
+				dropSound.play(.5f);
+				if (dropsGathered%5 == 0){
+					dropSound.play(1f);
+				}
 				iter.remove();
 			}
 		}
 	}
+	
 
 
     @Override
